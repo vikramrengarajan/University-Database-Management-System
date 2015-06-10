@@ -1,0 +1,309 @@
+
+CREATE TABLE Person 
+( 
+NetID varchar(255), 
+Fname varchar(255) NOT NULL, 
+Lname varchar(255) NOT NULL, 
+Mname varchar(255), 
+DOB date NOT NULL, 
+Email varchar(255), 
+City varchar(255) NOT NULL, 
+State varchar(255) NOT NULL, 
+Street varchar(255) NOT NULL, 
+Zipcode int NOT NULL, 
+PRIMARY KEY (NetID), 
+UNIQUE (Email), 
+UNIQUE (Fname,Mname,Lname,DOB) 
+); 
+ CREATE TABLE Department 
+
+( 
+Name varchar(255), 
+Abbreviation varchar(255), 
+Website varchar(255), 
+NetID_HOD varchar(255), 
+PRIMARY KEY (Abbreviation), 
+UNIQUE (Name), 
+UNIQUE (Website) 
+); 
+
+
+CREATE TABLE Buildings 
+
+( 
+Name varchar(255) NOT NULL, 
+Abbreviation varchar(255), 
+Dept_Abbr varchar(255), 
+PRIMARY KEY (Abbreviation), 
+FOREIGN KEY (Dept_Abbr) REFERENCES Department (Abbreviation), 
+UNIQUE (Name) 
+); 
+CREATE TABLE Rooms 
+
+( 
+Room_Number int NOT NULL, 
+Bldg_Abbr varchar(255), 
+FOREIGN KEY (Bldg_Abbr) REFERENCES Buildings (Abbreviation), 
+PRIMARY KEY (Room_Number,Bldg_Abbr), 
+CHECK (Room_Number >= 1000 AND Room_Number <= 9999) 
+); 
+ CREATE TABLE Classroom 
+
+( 
+Capacity int NOT NULL, 
+Password varchar(255) NOT NULL, 
+Room_Number int, 
+Bldg_Abbr varchar(255), 
+CHECK (Room_Number >= 1000 AND Room_Number <= 9999), 
+FOREIGN KEY (Room_Number, Bldg_Abbr) REFERENCES Rooms (Room_Number, Bldg_Abbr), 
+PRIMARY KEY (Room_Number,Bldg_Abbr) ); 
+CREATE TABLE Office 
+
+( 
+Room_Number int, 23 
+
+Bldg_Abbr varchar(255), 
+CHECK (Room_Number >= 1000 AND Room_Number <= 9999), 
+FOREIGN KEY (Room_Number, Bldg_Abbr) REFERENCES Rooms (Room_Number, Bldg_Abbr), 
+PRIMARY KEY (Room_Number,Bldg_Abbr) ); 
+CREATE TABLE Lab 
+
+( 
+Name varchar(255) NOT NULL, 
+Room_Number int, 
+Bldg_Abbr varchar(255), 
+CHECK (Room_Number >= 1000 AND Room_Number <= 9999), 
+FOREIGN KEY (Room_Number, Bldg_Abbr) REFERENCES Rooms (Room_Number, Bldg_Abbr), 
+PRIMARY KEY (Room_Number,Bldg_Abbr) 
+); 
+ CREATE TABLE Course 
+
+( 
+Name varchar(255) NOT NULL, 
+Course_number int , 
+Credit_Hours int NOT NULL, 
+OfferedBy_Dept varchar(255), 
+FOREIGN KEY (OfferedBy_Dept) REFERENCES Department (Abbreviation), 
+PRIMARY KEY (Course_number), 
+CHECK (Course_number >= 1000 AND Course_number <= 9999), 
+CHECK (Credit_Hours IN (1,2,3,4,5,6)) 
+); 
+CREATE TABLE TextBook 
+
+( 
+Title varchar(255), 
+Author varchar(255), 
+Edition int, 
+Course_number int , 
+CHECK (Course_number >= 1000 AND Course_number <= 9999), 24 
+
+FOREIGN KEY (Course_number) REFERENCES Course (Course_number), 
+PRIMARY KEY (Course_number,Title,Author,Edition) 
+); 
+CREATE TABLE Track 
+
+( 
+Name varchar(255), 
+Dept_Abbr varchar(255), 
+FOREIGN KEY (Dept_Abbr) REFERENCES Department (Abbreviation), 
+PRIMARY KEY (Name,Dept_Abbr) 
+); 
+CREATE TABLE PhoneNumber ( 
+
+Phonenumber char(10) , 
+NetID varchar(255), 
+FOREIGN KEY (NetID) REFERENCES Person (NetID), 
+PRIMARY KEY (Phonenumber,NetID)); 
+CREATE TABLE Employee( 
+
+SSN int, 
+NetID varchar(255), 
+Salary int,UNIQUE (SSN), 
+Dept_Abbr varchar(255) NOT NULL, 
+CHECK (Salary > 0), 
+UNIQUE (SSN), 
+FOREIGN KEY (Dept_Abbr) REFERENCES Department(Abbreviation), 
+FOREIGN KEY (NetID) REFERENCES Person (NetID), 
+PRIMARY KEY (NetID)); 
+ CREATE TABLE Professor 
+
+( 
+Rank varchar(255) NOT NULL, 
+NetID varchar(255), 
+Office_Room_Number int NOT NULL, 
+Office_Bldg varchar(255) NOT NULL, 25 
+
+UNIQUE (Office_Room_Number,Office_Bldg), 
+CHECK (Rank IN ('Associate','Assistant','Full')), 
+CHECK (Office_Room_Number >= 1000 AND Office_Room_Number <= 9999), 
+FOREIGN KEY (NetID) REFERENCES Employee (NetID), 
+FOREIGN KEY (Office_Room_Number,Office_Bldg) REFERENCES Office (Room_Number,Bldg_Abbr), 
+PRIMARY KEY (NetID) 
+); 
+CREATE TABLE Office_Hours_Professor( 
+
+Day varchar(255) , 
+Prof_NetID varchar(255), 
+FromHours varchar(255) NOT NULL, 
+ToHours varchar(255) NOT NULL, 
+FOREIGN KEY (Prof_NetID) REFERENCES Professor (NetID), 
+PRIMARY KEY (Prof_NetID,Day)); 
+CREATE TABLE Lecturer 
+
+( 
+NetID varchar(255), 
+Office_Room_Number int NOT NULL, 
+Office_Bldg varchar(255) NOT NULL, 
+CHECK (Office_Room_Number >= 1000 AND Office_Room_Number <= 9999), 
+UNIQUE (Office_Room_Number,Office_Bldg), 
+FOREIGN KEY (NetID) REFERENCES Employee (NetID), 
+FOREIGN KEY (Office_Room_Number,Office_Bldg) REFERENCES Office (Room_Number,Bldg_Abbr), 
+PRIMARY KEY (NetID)); 
+); 
+ CREATE TABLE Section 
+
+( 
+Section_Number int, 
+Year int, 
+Semester varchar(255), 
+Capacity int, 26 
+
+Course_number int , 
+Prof_netid varchar(255) , 
+Lect_netid varchar(255) , 
+Classroom_no int, 
+Bldg_Abbr varchar(255), 
+Class_timings varchar(255), 
+CHECK (Semester IN ('Fall','Spring','Summer')), 
+CHECK (Course_number >= 1000 AND Course_number <= 9999), 
+CHECK (Section_Number >= 0 AND Section_Number<=999), 
+FOREIGN KEY (Course_number) REFERENCES Course(Course_number), 
+FOREIGN KEY (Prof_netid) REFERENCES Professor (NetID), 
+FOREIGN KEY (Lect_netid) REFERENCES Lecturer (NetID), 
+FOREIGN KEY (Classroom_no, Bldg_Abbr) REFERENCES Classroom (Room_Number, Bldg_Abbr), 
+PRIMARY KEY (Section_Number,Year,Semester,Course_number) 
+); 
+CREATE TABLE Office_Hours_Lecturer( 
+
+Day varchar(255) , 
+Lect_NetID varchar(255), 
+FromHours varchar(255) NOT NULL, 
+ToHours varchar(255) NOT NULL, 
+FOREIGN KEY (Lect_NetID) REFERENCES Lecturer (NetID), 
+PRIMARY KEY (Day)); 
+ CREATE TABLE Student( 
+
+NetID varchar(255), 
+Track_Name varchar(255) NOT NULL, 
+Dept_Abbr varchar(255) NOT NULL, 
+FOREIGN KEY (Track_Name) REFERENCES Track (Name), 
+FOREIGN KEY (Dept_Abbr) REFERENCES Department (Abbreviation) , 
+PRIMARY KEY (NetID) ); 
+ CREATE TABLE RA ( 
+
+
+WorkLoad int NOT NULL, 
+NetID varchar(255), 
+Prof_NetID varchar(255) NOT NULL, 
+Lab_Number int NOT NULL, 
+Bldg_Abbr varchar(255) NOT NULL, 
+CHECK (Lab_Number >= 1000 AND Lab_Number_Number <= 9999), 
+FOREIGN KEY (Prof_NetID) REFERENCES Professor (NetID), 
+FOREIGN KEY (NetID) REFERENCES Student (NetID), 
+FOREIGN KEY (NetID) REFERENCES Employee (NetID), 
+FOREIGN KEY (Lab_Number, Bldg_Abbr) REFERENCES Lab (Room_Number,Bldg_Abbr), 
+PRIMARY KEY (NetID)); 
+CREATE TABLE TA 
+
+( 
+NetID varchar(255), 
+Office_Room_Number int NOT NULL, 
+Office_Bldg varchar(255) NOT NULL, 
+CHECK (Office_Room_Number >= 1000 AND Office_Room_Number <= 9999), 
+FOREIGN KEY (NetID) REFERENCES Employee (NetID), 
+FOREIGN KEY (NetID) REFERENCES Student (NetID), 
+FOREIGN KEY (Office_Room_Number, Office_Bldg) REFERENCES Office (Room_Number,Bldg_Abbr), 
+PRIMARY KEY (NetID) 
+); 
+ CREATE TABLE Office_Hours_TA( 
+
+Day varchar(255) , 
+TA_NetID varchar(255), 
+FromHours varchar(255) NOT NULL, 
+ToHours varchar(255) NOT NULL, 
+FOREIGN KEY (TA_NetID) REFERENCES TA (NetID), 
+PRIMARY KEY (TA_NetID,Day)); 
+CREATE TABLE TRACK_HAS_COURSE( 
+
+Track_Name varchar(255), 28 
+
+Course_number int, 
+Dept_abbr varchar(255); 
+CHECK (Course_number >= 1000 AND Course_number <= 9999), 
+FOREIGN KEY (Track_Name) REFERENCES Track (Name), 
+FOREIGN KEY (Dept_Abbr) REFERENCES Tracck(Dept_Abbr), 
+FOREIGN KEY (Course_number) REFERENCES Course (Course_number) , 
+PRIMARY KEY (Course_number,Track_Name) ); 
+CREATE TABLE STUDENT_ENROLLS_SECTION 
+
+( 
+Is_Finished boolean, 
+Grade Float, 
+Student_NetID varchar(255), 
+Section_Number int, 
+Course_number int, 
+Year int, 
+Semester varchar(255), 
+CHECK (Course_number >= 1000 AND Course_number <= 9999), 
+CHECK (Section_Number >=0 AND Section_Number <= 999), 
+CHECK (Semester IN ('Fall','Spring','Summer')), 
+CHECK (Grade>=0.00 AND Grade<=4.00), 
+FOREIGN KEY (Student_NetID) REFERENCES Student (NetID), 
+FOREIGN KEY (Course_number,Section_Number,Year,Semester) REFERENCES Section (Course_number,Section_Number,Year,Semester), 
+PRIMARY KEY (Student_NetID,Section_Number,Course_number,Year,Semester) 
+); 
+CREATE TABLE STUDENT_ADVISEDBY_PROFESSOR( 
+
+Student_NetID varchar(255), 
+Prof_NetID varchar(255), 
+FOREIGN KEY (Student_NetID) REFERENCES Student (NetID), 
+FOREIGN KEY (Prof_NetID) REFERENCES Professor (NetID), 
+PRIMARY KEY (Student_NetID,Prof_NetID)); 
+CREATE TABLE TA_HANDLES_SECTION( 
+ 
+
+TA_NetID varchar(255), 
+Section_Number int, 
+Course_number int, 
+Year int, 
+Semester varchar(255), 
+WorkLoad int NOT NULL, 
+CHECK (Semester IN ('Fall','Spring','Summer')), 
+CHECK (Course_number >= 1000 AND Course_number <= 9999), 
+CHECK (Section_Number >=0 AND Section_Number <= 999), 
+FOREIGN KEY (TA_NetID) REFERENCES TA (NetID), 
+FOREIGN KEY (Course_number,Section_Number,Year,Semester) REFERENCES Section (Course_number,Section_Number,Year,Semester), 
+PRIMARY KEY (TA_NetID,Section_Number,Course_number,Year,Semester)); 
+CREATE TABLE PROFESSOR_RUNS_LAB( 
+
+Prof_NetID varchar(255), 
+Lab_Number int, 
+Bldg_Abbr varchar(255), 
+CHECK (Lab_Number >=1000 AND Lab_Number <= 9999), 
+FOREIGN KEY (Prof_NetID) REFERENCES Professor (NetID), 
+FOREIGN KEY (Lab_Number,Bldg_Abbr) REFERENCES Lab (Room_Number,Bldg_Abbr), 
+PRIMARY KEY (Prof_NetID,Lab_Number,Bldg_Abbr)); 
+CREATE TABLE pre_requisites 
+
+( 
+student_NetID varchar(255), 
+course_number int, 
+course_number_pre_req int, 
+CHECK (Course_number >= 1000 AND Course_number <= 9999), 
+CHECK (Course_number_pre_req >= 1000 AND Course_number <= 9999), 
+foreign key (course_number) references course(course_number), 
+foreign key (course_number_pre_req) references course(course_number), 
+foreign key (student_NetID) references student(netid), 
+primary key (course_number,course_number_pre_req,student_NetID) 30 
+
+);
